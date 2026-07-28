@@ -41,29 +41,21 @@ function doPost(e) {
 // 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel (ដោះស្រាយបញ្ហា CORS ទាំងស្រុង)
 // 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel
 function doGet(e) {
-  try {
-    var action = e.parameter.action;
-    var result = {};
-    
-    if (action === "getDashboardData") {
-      result = getDashboardData();
-    } else if (action === "getDailyClosingReport") {
-      result = getDailyClosingReport();
-    } else if (action === "getMonthlyClosingReport") {
-      result = getMonthlyClosingReport();
-    } else {
-      result = { status: "error", message: "Invalid action" };
-    }
-    
-    // បញ្ជូនទិន្នន័យចេញជា JSON (ភ្ជាប់ជាមួយ CORS Header ដោយស្វ័យប្រវត្តិ)
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (err) {
-    // បើមាន Error ក៏ឱ្យលោតជា JSON ដែរ ដើម្បីកុំឱ្យជាប់ CORS 
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
+  var action = e.parameter.action;
+  var result = {};
+  
+  if (action === "getDashboardData") {
+    result = getDashboardData();
+  } else if (action === "getDailyClosingReport") {
+    result = getDailyClosingReport();
+  } else if (action === "getMonthlyClosingReport") {
+    result = getMonthlyClosingReport();
+  } else {
+    result = { status: "error", message: "Invalid action" };
   }
+  
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 // ==========================================
 // មុខងារគ្រឹះដដែល (Functions)
