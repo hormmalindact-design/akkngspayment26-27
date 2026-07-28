@@ -1,6 +1,6 @@
 <!-- API Logic -->
     <script>
-      // ⚠️ សូម Paste Link API_URL របស់អ្នកនៅទីនេះ
+      // ⚠️ សូម Paste Link API_URL ដែល Copy ពី index.html មកដាក់នៅទីនេះ ⚠️
       const API_URL = "https://script.google.com/macros/s/AKfycbw4KrJEI2QWsgNKr-fbIt3iCU_-RPUaDkhk_9DKjlX8jOGWEBNddFPYftyblqdn2N7Q/exec"; 
       
       var allClassData = null; 
@@ -26,32 +26,31 @@
       }
 
       function refreshDashboard() {
-        // 💡 បានបន្ថែម &t=... ដើម្បីកុំឱ្យ Browser ចងចាំទិន្នន័យចាស់
-        fetch(`${API_URL}?action=getTeacherDashboardData&t=${new Date().getTime()}`)
+        fetch(`${API_URL}?action=getTeacherDashboardData`)
           .then(res => res.json())
           .then(data => {
             if (data.status === "error") {
-               alert("មានកំហុសពី Backend: " + data.message);
+               alert("មានកំហុសពី Backend: " + data.message + "\nសូមប្រាកដថាបាន Deploy កូដជា New Version!");
                return;
             }
+            // បង្ហាញទិន្នន័យ ព្រមទាំងភ្ជាប់ពាក្យ "នាក់" និង "KHR"
             document.getElementById('dashTotalPaid').innerText = (data.totalPaidStudents || 0) + " នាក់";
             document.getElementById('dashFemalePaid').innerText = (data.totalFemalePaid || 0) + " នាក់";
             document.getElementById('dashCollected').innerText = Number(data.totalCollected || 0).toLocaleString() + " KHR";
           })
           .catch(err => {
             console.error(err);
+            alert("មិនអាចភ្ជាប់ទៅកាន់ទិន្នន័យបានទេ! សូមពិនិត្យមើល API_URL នៅក្នុង mobile.html របស់អ្នក។");
           });
       }
 
       function loadClassData() {
-        // 💡 បានបន្ថែម &t=... ដើម្បីកុំឱ្យ Browser ចងចាំទិន្នន័យចាស់
-        fetch(`${API_URL}?action=getClassMonitoringData&t=${new Date().getTime()}`)
+        fetch(`${API_URL}?action=getClassMonitoringData`)
           .then(res => res.json())
           .then(data => {
             if (data.status === "error") return;
             allClassData = data;
             var selector = document.getElementById('classSelector');
-            selector.innerHTML = '<option value="">ជ្រើសរើសថ្នាក់រៀន...</option>'; // Reset ប្រអប់
             var classes = Object.keys(data).sort(); 
             classes.forEach(cls => {
               selector.innerHTML += `<option value="${cls}">ថ្នាក់ទី ${cls}</option>`;
@@ -123,8 +122,7 @@
         msgDiv.innerText = 'កំពុងស្វែងរក...';
         document.getElementById('studentCard').style.display = 'none';
         
-        // 💡 បានបន្ថែម &t=... ដើម្បីកុំឱ្យ Browser ចងចាំទិន្នន័យចាស់
-        fetch(`${API_URL}?action=getStudentById&studentId=${id}&t=${new Date().getTime()}`)
+        fetch(`${API_URL}?action=getStudentById&studentId=${id}`)
           .then(res => res.json())
           .then(student => {
             if(student && student.id) {
@@ -159,8 +157,7 @@
         document.getElementById('historyTableArea').style.display = 'block';
         tbody.innerHTML = '<tr><td class="p-2 text-center text-gray-400">កំពុងទាញយក...</td></tr>';
         
-        // 💡 បានបន្ថែម &t=... ដើម្បីកុំឱ្យ Browser ចងចាំទិន្នន័យចាស់
-        fetch(`${API_URL}?action=getStudentHistoryLog&studentId=${currentStudentId}&t=${new Date().getTime()}`)
+        fetch(`${API_URL}?action=getStudentHistoryLog&studentId=${currentStudentId}`)
           .then(res => res.json())
           .then(historyData => {
             tbody.innerHTML = '';
