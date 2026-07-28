@@ -4,8 +4,7 @@
 var TELEGRAM_BOT_TOKEN = "8877919591:AAHy-g0du2GBVJx0sHisVFTIsD32NAd35qA"; 
 var TELEGRAM_CHAT_ID = "-1004317236863";     
 
-// 🌐 សម្រាប់ទទួលសំណើពី Vercel (API Endpoint)
-// 🌐 សម្រាប់ទទួលសំណើ POST ពី Vercel (ដោះស្រាយបញ្ហា CORS)
+// 🌐 សម្រាប់ទទួលសំណើ POST ពី Vercel (បញ្ចូល និងកែប្រែទិន្នន័យ)
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
@@ -21,43 +20,52 @@ function doPost(e) {
     } else if (action === "updateStudentInfo") {
       result.message = updateStudentInfo(data.studentId, data.studentName, data.gender, data.studentClass, data.schoolYear, data.paymentType, data.otherNote, data.fullYearFeeInput, data.amountInput);
       result.status = "success";
+    } else if (action === "collectSecondPayment") {
+      // 💡 បានបន្ថែមមុខងារទទួលប្រាក់លើកទី២ នៅទីនេះ
+      result.message = collectSecondPayment(data.studentId, data.additionalAmount, data.paymentMethod, data.cashierName);
+      result.status = "success";
     } else {
       result.status = "error";
       result.message = "Invalid action";
     }
     
-    return ContentService.createTextOutput(JSON.stringify(result))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
       
   } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()})).setMimeType(ContentService.MimeType.JSON);
   } finally {
     lock.releaseLock();
   }
 }
 
-// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel
-// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel (ដោះស្រាយបញ្ហា CORS ទាំងស្រុង)
-// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel
+// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel (ទាញយកទិន្នន័យទៅបង្ហាញ)
 function doGet(e) {
   var action = e.parameter.action;
   var result = {};
   
+  // សម្រាប់ផ្ទាំង Admin
   if (action === "getDashboardData") {
     result = getDashboardData();
   } else if (action === "getDailyClosingReport") {
     result = getDailyClosingReport();
   } else if (action === "getMonthlyClosingReport") {
     result = getMonthlyClosingReport();
+  } 
+  // 💡 បានបន្ថែមផ្លូវឱ្យ Mobile App អាចទាញទិន្នន័យបាន (ពីមុនអត់មានទើបវាលោតលេខ ០)
+  else if (action === "getTeacherDashboardData") {
+    result = getTeacherDashboardData();
+  } else if (action === "getClassMonitoringData") {
+    result = getClassMonitoringData();
+  } else if (action === "getStudentById") {
+    result = getStudentById(e.parameter.studentId);
+  } else if (action === "getStudentHistoryLog") {
+    result = getStudentHistoryLog(e.parameter.studentId);
   } else {
     result = { status: "error", message: "Invalid action" };
   }
   
-  return ContentService.createTextOutput(JSON.stringify(result))
-    .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
 }
-// ==========================================
 // មុខងារគ្រឹះដដែល (Functions)
 // ==========================================
 function addNewStudent(studentName, gender, studentClass, paymentType, amount, otherNote, schoolYear, fullYearFeeInput, paymentMethod, cashierName) {
