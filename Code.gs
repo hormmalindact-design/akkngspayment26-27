@@ -4,7 +4,7 @@
 var TELEGRAM_BOT_TOKEN = "8877919591:AAHy-g0du2GBVJx0sHisVFTIsD32NAd35qA"; 
 var TELEGRAM_CHAT_ID = "-1004317236863";     
 
-// 🌐 សម្រាប់ទទួលសំណើ POST ពី Vercel (បញ្ចូល និងកែប្រែទិន្នន័យ)
+// 🌐 សម្រាប់ទទួលសំណើ POST ពី Vercel (បញ្ចូល កែប្រែ និង Login)
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
@@ -14,14 +14,17 @@ function doPost(e) {
     var action = data.action;
     var result = {};
     
-    if (action === "addNewStudent") {
+    // 💡 មុខងារ Login ថ្មី
+    if (action === "verifyLogin") {
+      result = verifyLogin(data.username, data.password);
+    } 
+    else if (action === "addNewStudent") {
       result.studentId = addNewStudent(data.studentName, data.gender, data.studentClass, data.paymentType, data.amount, data.otherNote, data.schoolYear, data.fullYearFeeInput, data.paymentMethod, data.cashierName);
       result.status = "success";
     } else if (action === "updateStudentInfo") {
       result.message = updateStudentInfo(data.studentId, data.studentName, data.gender, data.studentClass, data.schoolYear, data.paymentType, data.otherNote, data.fullYearFeeInput, data.amountInput);
       result.status = "success";
     } else if (action === "collectSecondPayment") {
-      // 💡 បានបន្ថែមមុខងារទទួលប្រាក់លើកទី២ នៅទីនេះ
       result.message = collectSecondPayment(data.studentId, data.additionalAmount, data.paymentMethod, data.cashierName);
       result.status = "success";
     } else {
@@ -38,32 +41,42 @@ function doPost(e) {
   }
 }
 
-// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel (ទាញយកទិន្នន័យទៅបង្ហាញ)
+// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel (ទាញយកទិន្នន័យ)
 function doGet(e) {
   var action = e.parameter.action;
   var result = {};
   
-  // សម្រាប់ផ្ទាំង Admin
-  if (action === "getDashboardData") {
-    result = getDashboardData();
-  } else if (action === "getDailyClosingReport") {
-    result = getDailyClosingReport();
-  } else if (action === "getMonthlyClosingReport") {
-    result = getMonthlyClosingReport();
-  } 
-  // 💡 បានបន្ថែមផ្លូវឱ្យ Mobile App អាចទាញទិន្នន័យបាន (ពីមុនអត់មានទើបវាលោតលេខ ០)
-  else if (action === "getTeacherDashboardData") {
-    result = getTeacherDashboardData();
-  } else if (action === "getClassMonitoringData") {
-    result = getClassMonitoringData();
-  } else if (action === "getStudentById") {
-    result = getStudentById(e.parameter.studentId);
-  } else if (action === "getStudentHistoryLog") {
-    result = getStudentHistoryLog(e.parameter.studentId);
-  } else {
-    result = { status: "error", message: "Invalid action" };
-  }
+  if (action === "getDashboardData") result = getDashboardData();
+  else if (action === "getDailyClosingReport") result = getDailyClosingReport();
+  else if (action === "getMonthlyClosingReport") result = getMonthlyClosingReport();
+  else if (action === "getTeacherDashboardData") result = getTeacherDashboardData();
+  else if (action === "getClassMonitoringData") result = getClassMonitoringData();
+  else if (action === "getStudentById") result = getStudentById(e.parameter.studentId);
+  else if (action === "getStudentHistoryLog") result = getStudentHistoryLog(e.parameter.studentId);
+  else result = { status: "error", message: "Invalid action" };
   
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ==========================================
+// 💡 អនុគមន៍ផ្ទៀងផ្ទាត់ការ Login (កំណត់ Username និង Password នៅទីនេះ)
+// ==========================================
+function verifyLogin(username, password) {
+  var users = {
+    "malinda": { pass: "123456", name: "ហម ម៉ាលីនដា" },
+    "admin": { pass: "admin123", name: "នាយកសាលា" }
+  };
+  
+  var user = users[username.toLowerCase()];
+  
+  if (user && user.pass === password) {
+    return { status: "success", cashierName: user.name };
+  } else {
+    return { status: "error", message: "ឈ្មោះគណនី ឬលេខសម្ងាត់មិនត្រឹមត្រូវទេ!" };
+  }
+}
+
+// ⚠️ (សូមរក្សាមុខងារផ្សេងៗទៀតរបស់អ្នកដូចជា addNewStudent, getDashboardData នៅខាងក្រោមដដែល)  
   return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
 }
 // មុខងារគ្រឹះដដែល (Functions)
