@@ -26,7 +26,8 @@
       }
 
       function refreshDashboard() {
-        fetch(`${API_URL}?action=getTeacherDashboardData`)
+        // 💡 ថែម &t= ទីនេះ
+        fetch(`${API_URL}?action=getTeacherDashboardData&t=${new Date().getTime()}`)
           .then(res => res.json())
           .then(data => {
             if (data.status === "error") {
@@ -45,12 +46,14 @@
       }
 
       function loadClassData() {
-        fetch(`${API_URL}?action=getClassMonitoringData`)
+        // 💡 ថែម &t= ទីនេះ
+        fetch(`${API_URL}?action=getClassMonitoringData&t=${new Date().getTime()}`)
           .then(res => res.json())
           .then(data => {
             if (data.status === "error") return;
             allClassData = data;
             var selector = document.getElementById('classSelector');
+            selector.innerHTML = '<option value="">ជ្រើសរើសថ្នាក់រៀន...</option>'; // Reset មុននឹងបញ្ជូលថ្មី
             var classes = Object.keys(data).sort(); 
             classes.forEach(cls => {
               selector.innerHTML += `<option value="${cls}">ថ្នាក់ទី ${cls}</option>`;
@@ -122,7 +125,8 @@
         msgDiv.innerText = 'កំពុងស្វែងរក...';
         document.getElementById('studentCard').style.display = 'none';
         
-        fetch(`${API_URL}?action=getStudentById&studentId=${id}`)
+        // 💡 ថែម &t= ទីនេះ
+        fetch(`${API_URL}?action=getStudentById&studentId=${id}&t=${new Date().getTime()}`)
           .then(res => res.json())
           .then(student => {
             if(student && student.id) {
@@ -157,7 +161,8 @@
         document.getElementById('historyTableArea').style.display = 'block';
         tbody.innerHTML = '<tr><td class="p-2 text-center text-gray-400">កំពុងទាញយក...</td></tr>';
         
-        fetch(`${API_URL}?action=getStudentHistoryLog&studentId=${currentStudentId}`)
+        // 💡 ថែម &t= ទីនេះ
+        fetch(`${API_URL}?action=getStudentHistoryLog&studentId=${currentStudentId}&t=${new Date().getTime()}`)
           .then(res => res.json())
           .then(historyData => {
             tbody.innerHTML = '';
