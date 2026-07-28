@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Muol+Light&family=Khmer+OS+Battambang&display=swap" rel="stylesheet">
+  <style>
+      body { font-family: 'Khmer OS Battambang', sans-serif; background-color: #e2e8f0; }
+      .font-muol { font-family: 'Khmer OS Muol Light', sans-serif; }
+      
+      @media print {
+        @page { size: A4 portrait; margin: 15mm 12mm; }
+        body { background-color: white; -webkit-print-color-adjust: exact; padding: 0; }
+        .no-print { display: none; }
+        .page-break { page-break-after: always; }
+        
+        /* 💡 នេះជាកូដវេទមន្ត ការពារការដាច់ទំព័រ */
+        table { page-break-inside: auto; }
+        tr { page-break-inside: avoid; page-break-after: auto; }
+        thead { display: table-header-group; } /* ឱ្យក្បាលតារាងលោតមកបង្ហាញឯកឯងនៅទំព័រថ្មី */
+        .keep-together { page-break-inside: avoid; } /* ការពារកុំឱ្យប្រអប់ស៊ីញ៉េដាច់ខុសគ្នា */
+      }
+    </style>
+  </head>
+  <body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto bg-white p-4 rounded-xl shadow-sm mb-6 border print:hidden flex justify-between items-center">
+      <div>
+        <h4 class="font-bold text-slate-800 text-sm">📋 របាយការណ៍សិស្សជំពាក់ប្រាក់ឆមាសទី២</h4>
+        <p class="text-xs text-gray-500">ទិន្នន័យត្រូវបានរៀបចំរួចជាស្រេចសម្រាប់បោះពុម្ពលើក្រដាស A4 portrait។</p>
+      </div>
+      <button onclick="window.print()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-5 py-2 rounded-lg text-sm shadow transition flex items-center gap-2">
+        🖨️ ចុចបោះពុម្ពរបាយការណ៍ (Print)
+      </button>
+    </div>
+
+    <div id="reportContainer" class="w-full max-w-4xl mx-auto bg-white text-black p-2 md:p-0 shadow-md print:shadow-none print:w-full">
+      <p class="text-center py-10 italic text-gray-400 text-sm no-print" id="loadingText">កំពុងទាញយកទិន្នន័យ និងរៀបចំទម្រង់រដ្ឋបាល...</p>
+    </div>
+
+    <script>
+      window.onload = function() {
+        google.script.run.withSuccessHandler(function(data) {
+          var container = document.getElementById('reportContainer');
+          document.getElementById('loadingText').style.display = 'none';
+          
+          if (!data || Object.keys(data.classes).length === 0) {
+            container.innerHTML = '<p class="text-center p-10 font-bold text-red-500">🎉 គ្មានសិស្សណាម្នាក់ជំពាក់ប្រាក់លើកទី២ ឡើយ!</p>';
+            return;
+          }
+          
+          var htmlContent = "";
+          
+          Object.keys(data.classes).sort().forEach(function(className) {
+            var classObj = data.classes[className];
+            
+            htmlContent += `
+              <div class="bg-white p-6 mb-8 border-b-2 border-dashed border-gray-300 last:border-0 print:mb-0 print:border-0 print:pb-10">
+                
+                <div class="flex justify-between items-start mb-6">
+                  <div class="flex items-center gap-3">
+                    <img src="https://lh3.googleusercontent.com/d/1wkwC994Ybybe2TUOeE-h-gNIxfZQyYvY" class="w-16 h-16 object-contain">
+                    <div>
+                      <h1 class="font-muol text-blue-900 text-xs md:text-sm leading-tight">សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
+                      <h2 class="font-muol text-blue-700 text-[11px] md:text-xs">នរោត្តម មុនីនាថ សីហនុ</h2>
+                    </div>
+                  </div>
+                  <div class="text-center space-y-1">
+                    <p class="font-muol text-[13px] md:text-sm text-slate-900">ព្រះរាជាណាចក្រកម្ពុជា</p>
+                    <p class="font-muol text-xs text-slate-800">ជាតិ សាសនា ព្រះមហាក្សត្រ</p>
+                  </div>
+                </div>
+
+                <div class="text-center mb-6">
+                  <h3 class="font-muol text-base text-slate-900 mb-1">បញ្ជីឈ្មោះសិស្សានុសិស្សត្រូវបង់ថវិកាលើកទី២ (ឆមាសទី២)</h3>
+                  <p class="text-sm font-bold bg-blue-50 text-blue-800 inline-block px-4 py-1 rounded-full border border-blue-200">
+                    📍 ថ្នាក់រៀន៖ ${className}
+                  </p>
+                  <p class="text-[11px] text-gray-500 mt-2">គិតត្រឹមថ្ងៃទី៖ ${data.dateGenerated}</p>
+                </div>
+
+                <table class="w-full text-left text-[11px] border-collapse border border-slate-400 mb-4">
+                  <thead class="bg-slate-100 font-bold text-slate-700">
+                    <tr>
+                      <th class="border border-slate-400 p-2 text-center w-8">ល.រ</th>
+                      <th class="border border-slate-400 p-2 text-center w-20">កូដសិស្ស</th>
+                      <th class="border border-slate-400 p-2">ឈ្មោះសិស្ស</th>
+                      <th class="border border-slate-400 p-2 text-center w-10">ភេទ</th>
+                      <th class="border border-slate-400 p-2 text-center">ថ្ងៃបង់ប្រាក់</th>
+                      <th class="border border-slate-400 p-2 text-center">វិធីសាស្ត្រ</th>
+                      <th class="border border-slate-400 p-2 text-right">សរុប/ឆ្នាំ</th>
+                      <th class="border border-slate-400 p-2 text-right">បានបង់</th>
+                      <th class="border border-slate-400 p-2 text-right text-red-600 bg-red-50/50">ត្រូវបង់លើកទី២</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-200">
+            `;
+            
+            classObj.students.forEach(function(stu, index) {
+              // កាត់ឈ្មោះវិធីសាស្ត្រឱ្យខ្លីកុំឱ្យស៊ីទំហំតារាង (ឧ. សាច់ប្រាក់សុទ្ធ (Cash) -> Cash)
+              var shortMethod = stu.lastPayMethod;
+              if(shortMethod.includes("Cash")) shortMethod = "Cash";
+              if(shortMethod.includes("KHQR")) shortMethod = "KHQR";
+
+              htmlContent += `
+                <tr class="hover:bg-slate-50">
+                  <td class="border border-slate-400 p-1.5 text-center">${index + 1}</td>
+                  <td class="border border-slate-400 p-1.5 text-center font-semibold text-slate-600">${stu.id}</td>
+                  <td class="border border-slate-400 p-1.5 font-bold text-slate-900">${stu.name}</td>
+                  <td class="border border-slate-400 p-1.5 text-center">${stu.gender}</td>
+                  <td class="border border-slate-400 p-1.5 text-center text-blue-700">${stu.lastPayDate}</td>
+                  <td class="border border-slate-400 p-1.5 text-center text-gray-500 text-[10px]">${shortMethod}</td>
+                  <td class="border border-slate-400 p-1.5 text-right">${stu.fullFee.toLocaleString()}</td>
+                  <td class="border border-slate-400 p-1.5 text-right text-emerald-600 font-medium">${stu.paidAmt.toLocaleString()}</td>
+                  <td class="border border-slate-400 p-1.5 text-right font-black text-red-600 bg-red-50/30">${stu.remaining.toLocaleString()}</td>
+                </tr>
+              `;
+            });
+            
+            htmlContent += `
+                  <tr class="bg-slate-50 font-bold">
+                    <td colspan="6" class="border border-slate-400 p-2 text-right text-slate-700">សរុបទឹកប្រាក់ជំពាក់ក្នុងថ្នាក់នេះ៖</td>
+                    <td colspan="3" class="border border-slate-400 p-2 text-right text-red-600 text-sm font-black">${classObj.classRemainingTotal.toLocaleString()} KHR</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p class="text-[10px] text-gray-400 italic mb-6">* លោកគ្រូ-អ្នកគ្រូប្រចាំថ្នាក់ សូមមេត្តាជួយក្រើនរំលឹកដល់មាតាបិតាសិស្សខាងលើ ដើម្បីមកបំពេញកាតព្វកិច្ចបង់បង្គ្រប់ឱ្យបានទាន់ពេលវេលា។</p>
+
+              <div class="flex justify-between text-xs mt-6 pt-2">
+                <div class="text-center w-40">
+                  <p class="mb-14 font-semibold text-gray-500">បានឃើញ និងឯកភាព<br><span class="font-bold text-slate-800">នាយកសាលា</span></p>
+                  <p class="border-t border-slate-400 pt-1 text-gray-400">(ហត្ថលេខា និងត្រា)</p>
+                </div>
+                <div class="text-center w-40">
+                  <p class="mb-14 font-semibold text-gray-500">គ្រូប្រចាំថ្នាក់<br><span class="font-bold text-slate-800">ទទួលបន្ទុក</span></p>
+                  <p class="border-t border-slate-400 pt-1 text-gray-400">(ហត្ថលេខា និងឈ្មោះ)</p>
+                </div>
+                <div class="text-center w-40">
+                  <p class="mb-14 font-semibold text-gray-500">ថ្ងៃទី.....ខែ.....ឆ្នាំ២០២៦<br><span class="font-bold text-slate-800">អ្នករៀបចំរបាយការណ៍</span></p>
+                  <p class="border-t border-slate-400 pt-1 text-gray-400">(ហត្ថលេខា)</p>
+                </div>
+              </div>
+            </div>
+            <div class="page-break no-print my-6 border-b border-gray-400"></div>
+            `;
+          });
+          
+          container.innerHTML = htmlContent;
+        }).getPendingSecondPaymentReport();
+      };
+    </script>
+  </body>
+</html>
