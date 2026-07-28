@@ -208,6 +208,96 @@ function getDashboardData() {
   };
 }
 
+
+// អនុគមន៍ទាញយកទិន្នន័យសង្ខេបសម្រាប់ Mobile App
+function getTeacherDashboardData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Students_Payment");
+  if (!sheet) return { totalPaidStudents: 0, totalFemalePaid: 0, totalCollected: 0, totalRemaining: 0 };
+  
+  var data = sheet.getDataRange().getValues();
+  
+  var totalPaidStudents = 0;
+  var totalFemalePaid = 0;
+  var totalCollected = 0;
+  var totalRemaining = 0;
+  
+  for (var i = 1; i < data.length; i++) {
+    var id = String(data[i][0]).trim();
+    if (!id) continue;
+    
+    var gender = String(data[i][10]).trim(); // Column K (ភេទ)
+    var paidAmt = Number(data[i][4]) || 0;   // Column E (ប្រាក់បានបង់)
+    var remaining = Number(data[i][13]) || 0; // Column N (ប្រាក់នៅខ្វះ)
+    
+    if (paidAmt > 0) {
+      totalPaidStudents++;
+      if (gender === "ស្រី" || gender === "Female") {
+        totalFemalePaid++;
+      }
+      totalCollected += paidAmt;
+    }
+    totalRemaining += remaining;
+  }
+  
+  return {
+    totalPaidStudents: totalPaidStudents,
+    totalFemalePaid: totalFemalePaid,
+    totalCollected: totalCollected,
+    totalRemaining: totalRemaining
+  };
+}
+
+// អនុគមន៍ទាញយកបញ្ជីសិស្សតាមថ្នាក់សម្រាប់ Mobile App
+function getClassMonitoringData() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Students_Payment");
+  if (!sheet) return {};
+  var data = sheet.getDataRange().getValues();
+  
+  var classGroups = {};
+  
+  for (var i = 1; i < data.length; i++) {
+    var id = String(data[i][0]).trim();
+    if (!id) continue;
+    
+    var name = String(data[i][1]).trim(); // Column B
+    var className = String(data[i][2]).trim() || "មិនកំណត់"; // Column C
+    var paidAmt = Number(data[i][4]) || 0; // Column E
+    var rawDate = data[i][6]; // Column G (ថ្ងៃខែបង់ប្រាក់)
+    var status = String(data[i][7]).trim(); // Column H
+    var gender = String(data[i][10]).trim(); // Column K
+    var fullFee = Number(data[i][12]) || paidAmt; // Column M
+    var remaining = Number(data[i][13]) || 0; // Column N
+    
+    var dateStr = "-";
+    if (rawDate) {
+      if (rawDate instanceof Date) {
+        dateStr = Utilities.formatDate(rawDate, Session.getScriptTimeZone(), "dd/MM/yyyy");
+      } else {
+        dateStr = String(rawDate).split(" ")[0];
+      }
+    }
+    
+    if (!classGroups[className]) {
+      classGroups[className] = [];
+    }
+    
+    classGroups[className].push({
+      name: name,
+      gender: gender,
+      status: status,
+      fullFee: fullFee,
+      paidAmt: paidAmt,
+      remaining: remaining,
+      date: dateStr
+    });
+  }
+  
+  return classGroups;
+}
+
+
 function getStudentById(studentId) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Students_Payment");
   var data = sheet.getDataRange().getValues();
