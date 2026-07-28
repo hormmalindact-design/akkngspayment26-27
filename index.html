@@ -10,7 +10,7 @@
       .font-muol { font-family: 'Khmer OS Muol Light', sans-serif; }
       @media print {
         @page { size: A4 portrait; margin: 10mm; }
-        body { background-color: white; }
+        body { -webkit-print-color-adjust: exact; background-color: white; }
         .print-hide { display: none !important; }
         .print-show { display: block !important; }
       }
@@ -19,6 +19,7 @@
   <body class="bg-slate-50 p-4 md:p-6 text-gray-800">
 
     <div id="mainAppWrapper" class="max-w-7xl mx-auto print-hide">
+      <!-- ផ្នែកក្បាល -->
       <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 flex flex-col md:flex-row items-center justify-between gap-4 border-t-4 border-blue-600">
         <div class="flex items-center gap-4 text-center md:text-left">
           <img src="https://lh3.googleusercontent.com/d/1wkwC994Ybybe2TUOeE-h-gNIxfZQyYvY" alt="School Logo" class="w-16 h-16 object-contain">
@@ -33,65 +34,110 @@
             <div id="liveDate" class="text-xs text-blue-600 font-semibold mt-1">ថ្ងៃទី ០ គ្មាន ឆ្នាំ ០</div>
           </div>
           <div class="flex gap-2 w-full mt-2">
-            <button onclick="generateDailyReport()" class="flex-1 bg-slate-800 text-white font-bold py-2 px-3 rounded-xl text-[11px]">📊 របាយការណ៍ថ្ងៃនេះ</button>
-            <button onclick="generateMonthlyReport()" class="flex-1 bg-indigo-700 text-white font-bold py-2 px-3 rounded-xl text-[11px]">📅 របាយការណ៍ខែនេះ</button>
+            <button onclick="generateDailyReport()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-3 rounded-xl text-[11px] transition">📊 របាយការណ៍ថ្ងៃនេះ</button>
+            <button onclick="generateMonthlyReport()" class="flex-1 bg-indigo-700 hover:bg-indigo-800 text-white font-bold py-2 px-3 rounded-xl text-[11px] transition">📅 របាយការណ៍ខែនេះ</button>
           </div>
         </div>
       </div>
 
-      <!-- Cards -->
+      <!-- ផ្នែក Cards ស្ថិតិ -->
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        <div class="bg-blue-600 p-5 rounded-2xl text-white"><p class="text-[10px] opacity-80">សិស្សបានបង់ប្រាក់</p><h3 id="cardTotalPaid" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
-        <div class="bg-pink-600 p-5 rounded-2xl text-white"><p class="text-[10px] opacity-80">សិស្សស្រីបង់ប្រាក់</p><h3 id="cardTotalFemale" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
-        <div class="bg-orange-600 p-5 rounded-2xl text-white"><p class="text-[10px] opacity-80">សិស្សបញ្ចុះតម្លៃ</p><h3 id="cardTotalDiscounted" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
-        <div class="bg-purple-600 p-5 rounded-2xl text-white"><p class="text-[10px] opacity-80">សិស្សក្រីក្រ/លើកលែង</p><h3 id="cardTotalExempted" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
-        <div class="bg-emerald-600 p-5 rounded-2xl text-white sm:col-span-2 md:col-span-1"><p class="text-[10px] opacity-80">ថវិកាសរុប</p><h3 id="cardRevenue" class="text-xl font-bold mt-2">0 KHR</h3></div>
+        <div class="bg-blue-600 p-5 rounded-2xl text-white shadow-sm"><p class="text-[10px] opacity-80 uppercase font-semibold">សិស្សបានបង់ប្រាក់</p><h3 id="cardTotalPaid" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
+        <div class="bg-pink-600 p-5 rounded-2xl text-white shadow-sm"><p class="text-[10px] opacity-80 uppercase font-semibold">សិស្សស្រីបង់ប្រាក់</p><h3 id="cardTotalFemale" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
+        <div class="bg-orange-600 p-5 rounded-2xl text-white shadow-sm"><p class="text-[10px] opacity-80 uppercase font-semibold">សិស្សបញ្ចុះតម្លៃ</p><h3 id="cardTotalDiscounted" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
+        <div class="bg-purple-600 p-5 rounded-2xl text-white shadow-sm"><p class="text-[10px] opacity-80 uppercase font-semibold">សិស្សក្រីក្រ/លើកលែង</p><h3 id="cardTotalExempted" class="text-2xl font-bold mt-1">0 នាក់</h3></div>
+        <div class="bg-emerald-600 p-5 rounded-2xl text-white sm:col-span-2 md:col-span-1 shadow-sm"><p class="text-[10px] opacity-80 uppercase font-semibold">ថវិកាសរុប</p><h3 id="cardRevenue" class="text-xl font-bold mt-2">0 KHR</h3></div>
       </div>
 
-      <!-- Form និង Table -->
+      <!-- ផ្នែក Form និង Table -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+        
+        <!-- Form ចុះឈ្មោះ/កែប្រែ -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border">
           <h2 id="formTitle" class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b">📝 ចុះឈ្មោះ និងបង់ប្រាក់</h2>
           <input type="hidden" id="editStudentId"> 
           <div class="space-y-3">
-            <div><label class="text-xs font-bold text-gray-600">ឆ្នាំសិក្សា៖</label><select id="schoolYear" class="w-full p-2.5 border rounded-lg text-sm"><option value="2025-2026">2025-2026</option></select></div>
+            <div><label class="text-xs font-bold text-gray-600">ឆ្នាំសិក្សា៖</label><select id="schoolYear" class="w-full p-2.5 border rounded-lg text-sm"><option value="2025-2026">2025-2026</option><option value="2026-2027">2026-2027</option></select></div>
             <div><label class="text-xs font-bold text-gray-600">ឈ្មោះសិស្ស៖</label><input type="text" id="stuName" class="w-full p-2.5 border rounded-lg text-sm" placeholder="ឧ. ផា សុភ័ក្ត្រ"></div>
             <div><label class="text-xs font-bold text-gray-600">ភេទ៖</label><select id="gender" class="w-full p-2.5 border rounded-lg text-sm"><option value="ប្រុស">ប្រុស</option><option value="ស្រី">ស្រី</option></select></div>
             <div><label class="text-xs font-bold text-gray-600">ថ្នាក់រៀន៖</label><input type="text" id="stuClass" class="w-full p-2.5 border rounded-lg text-sm" placeholder="ឧ. ថ្នាក់ទី៥"></div>
             <div><label class="text-xs font-bold text-gray-600">ប្រភេទការបង់៖</label><select id="payType" class="w-full p-2.5 border rounded-lg text-sm"><option value="១ឆមាស">១ឆមាស</option><option value="១ឆ្នាំពេញ">១ឆ្នាំពេញ</option></select></div>
-            <div><label class="text-xs font-bold text-gray-600">លក្ខខណ្ឌពិសេស៖</label><select id="otherNote" onchange="checkSpecialCondition()" class="w-full p-2.5 border rounded-lg text-sm"><option value="ធម្មតា">ធម្មតា</option><option value="សិស្សក្រីក្រ (លើកលែង)">សិស្សក្រីក្រ (លើកលែង)</option></select></div>
-            <div><label class="text-xs font-bold text-gray-600">តម្លៃពេញ១ឆ្នាំ៖</label><input type="number" id="fullYearFee" value="600000" oninput="calculateRemainingHint()" class="w-full p-2.5 border rounded-lg text-sm"></div>
-            <div><label class="text-xs font-bold text-gray-600">ទឹកប្រាក់បង់ជាក់ស្តែង៖</label><input type="number" id="amount" value="600000" oninput="calculateRemainingHint()" class="w-full p-2.5 border rounded-lg text-sm"><span id="amountHint" class="text-[11px] text-gray-500"></span></div>
+            <div><label class="text-xs font-bold text-gray-600">លក្ខខណ្ឌពិសេស៖</label><select id="otherNote" class="w-full p-2.5 border rounded-lg text-sm"><option value="ធម្មតា">ធម្មតា</option><option value="សិស្សក្រីក្រ (លើកលែង)">សិស្សក្រីក្រ (លើកលែង)</option><option value="សិស្សបញ្ចុះតម្លៃ">សិស្សបញ្ចុះតម្លៃ</option></select></div>
+            <div><label class="text-xs font-bold text-gray-600">តម្លៃពេញ១ឆ្នាំ៖</label><input type="number" id="fullYearFee" value="600000" class="w-full p-2.5 border rounded-lg text-sm"></div>
+            <div><label class="text-xs font-bold text-gray-600">ទឹកប្រាក់បង់ជាក់ស្តែង៖</label><input type="number" id="amount" value="600000" class="w-full p-2.5 border rounded-lg text-sm"></div>
             <div id="paymentDetailsArea" class="space-y-3 pt-3 border-t">
               <div><label class="text-xs font-bold text-gray-600">វិធីសាស្ត្របង់៖</label><select id="paymentMethod" class="w-full p-2.5 border rounded-lg text-sm"><option value="សាច់ប្រាក់សុទ្ធ (Cash)">សាច់ប្រាក់សុទ្ធ (Cash)</option><option value="ស្កែន (KHQR)">ស្កែន (KHQR)</option></select></div>
               <div><label class="text-xs font-bold text-gray-600">ឈ្មោះអ្នកទទួលប្រាក់៖</label><input type="text" id="cashierName" class="w-full p-2.5 border rounded-lg text-sm" placeholder="ឈ្មោះបេឡា"></div>
             </div>
-            <button id="btnSubmit" onclick="submitStudent()" class="w-full p-3 bg-blue-600 text-white font-bold rounded-lg text-sm mt-2">រក្សាទុកទិន្នន័យ</button>
+            
+            <button id="btnSubmit" onclick="submitStudent()" class="w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm mt-2 transition">រក្សាទុកទិន្នន័យ</button>
+            <button id="btnCancelEdit" onclick="cancelEditMode()" class="w-full p-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg text-xs transition mt-1 hidden">បោះបង់ការកែប្រែ</button>
           </div>
           <div id="msg" class="mt-4 p-3 rounded-lg text-center text-xs font-bold hidden"></div>
         </div>
 
+        <!-- តារាងបង្ហាញសិស្ស -->
         <div class="bg-white p-6 rounded-2xl shadow-sm border lg:col-span-2 overflow-hidden">
           <h2 class="text-lg font-bold text-gray-800 mb-4 pb-2 border-b flex justify-between items-center">
             <span>📋 បញ្ជីសិស្សចុះឈ្មោះចុងក្រោយ</span>
-            <button onclick="updateDashboard()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-md">🔄 Refresh</button>
+            <button onclick="updateDashboard()" class="text-xs bg-slate-100 px-3 py-1.5 rounded-md hover:bg-slate-200">🔄 Refresh</button>
           </h2>
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
-              <thead><tr class="bg-slate-100 text-slate-700 font-bold border-b"><th class="p-2">ឆ្នាំ</th><th class="p-2">ឈ្មោះ</th><th class="p-2">ភេទ</th><th class="p-2">ថ្នាក់</th><th class="p-2">បង់រួច</th><th class="p-2">តម្លៃពេញ</th><th class="p-2">ខ្វះ</th><th class="p-2">Status</th><th class="p-2">សកម្មភាព</th></tr></thead>
-              <tbody id="studentTableBody"><tr><td colspan="9" class="p-4 text-center text-gray-400">កំពុងទាញយក...</td></tr></tbody>
+            <table class="w-full text-left text-xs border-collapse">
+              <thead><tr class="bg-slate-100 text-slate-700 font-bold border-b"><th class="p-2">ឆ្នាំ</th><th class="p-2">ឈ្មោះ</th><th class="p-2 text-center">ភេទ</th><th class="p-2 text-center">ថ្នាក់</th><th class="p-2">បង់រួច</th><th class="p-2">តម្លៃពេញ</th><th class="p-2">ខ្វះ</th><th class="p-2 text-center">Status</th><th class="p-2 text-center">សកម្មភាព</th></tr></thead>
+              <tbody id="studentTableBody" class="divide-y divide-slate-100">
+                <tr><td colspan="9" class="p-4 text-center text-gray-400">កំពុងទាញយក...</td></tr>
+              </tbody>
             </table>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Print Area -->
-    <div id="printReceiptArea" class="hidden print-show w-full max-w-4xl mx-auto bg-white text-black p-4"></div>
-    <div id="dailyReportPrintArea" class="hidden print-show w-full max-w-4xl mx-auto bg-white text-black p-4"></div>
+    <!-- ផ្នែក PRINT របាយការណ៍បិទបញ្ជី (លាក់ពីភ្នែកធម្មតា) -->
+    <div id="dailyReportPrintArea" class="hidden print-show w-full max-w-4xl mx-auto bg-white text-black text-sm p-4">
+      <div class="flex items-center gap-4 border-b-2 border-slate-800 pb-2 mb-4">
+        <img src="https://lh3.googleusercontent.com/d/1wkwC994Ybybe2TUOeE-h-gNIxfZQyYvY" class="w-16 h-16 object-contain">
+        <div>
+          <h1 class="font-muol text-blue-900 text-base">សាលាបឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
+          <h2 class="font-muol text-blue-700 text-sm">នរោត្តម មុនីនាថ សីហនុ</h2>
+        </div>
+      </div>
 
+      <h3 id="rptTitle" class="text-center font-muol text-lg mb-2">របាយការណ៍បិទបញ្ជីបេឡា</h3>
+      <p class="text-center mb-6">កាលបរិច្ឆេទ៖ <span id="rptDate" class="font-bold"></span></p>
+      
+      <div class="grid grid-cols-2 gap-4 mb-6 p-4 bg-gray-50 border border-gray-300 rounded-lg font-semibold text-gray-700">
+        <p>សរុបប្រតិបត្តិការ៖ <span id="rptTx" class="font-bold text-black"></span> ប្រតិបត្តិការ</p>
+        <p>ចំណូល (សាច់ប្រាក់សុទ្ធ Cash)៖ <span id="rptCash" class="font-bold text-black"></span> KHR</p>
+        <p>ចំណូល (ស្កែន KHQR)៖ <span id="rptQR" class="font-bold text-black"></span> KHR</p>
+        <p class="text-base text-blue-800">ចំណូលសរុបរួម៖ <span id="rptGrand" class="font-bold text-lg"></span> KHR</p>
+      </div>
+      
+      <table class="w-full text-left text-xs border-collapse border border-gray-300 mb-8">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border border-gray-300 p-2 text-center">ល.រ</th>
+            <th class="border border-gray-300 p-2">កាលបរិច្ឆេទ & លេខកូដ</th>
+            <th class="border border-gray-300 p-2">ឈ្មោះសិស្ស</th>
+            <th class="border border-gray-300 p-2">ការបង់</th>
+            <th class="border border-gray-300 p-2 text-right">ទឹកប្រាក់</th>
+            <th class="border border-gray-300 p-2 text-center">វិធីសាស្ត្រ</th>
+          </tr>
+        </thead>
+        <tbody id="rptTbody"></tbody>
+      </table>
+      
+      <div class="flex justify-between mt-12 pt-4">
+        <div class="text-center"><p class="mb-16 font-semibold">បានឃើញ និងឯកភាព (នាយកសាលា)</p><p class="border-t border-slate-400 pt-1 w-56 mx-auto"></p></div>
+        <div class="text-center"><p class="mb-16 font-semibold">ហត្ថលេខា និងឈ្មោះបេឡា</p><p class="border-t border-slate-400 pt-1 w-56 mx-auto"></p></div>
+      </div>
+    </div>
+
+    <!-- Script Logic -->
     <script>
-      const API_URL = "https://script.google.com/macros/s/AKfycbxG7deaxzmNSAV24-golCKDc21TxhV99qNSLupvH28hNJ23tucUEYfw6k6Dxxf-ZTUY/exec"; // ជំនួស URL របស់អ្នកនៅទីនេះ
+      // ⚠️ សូមជំនួសដោយ Web App URL របស់អ្នក ⚠️
+      const API_URL = "https://script.google.com/macros/s/AKfycbw7-CXv8CnVo2B7zZu0olq_7-WJb6yU2mLX5QbuKwZHFxtqrIIFKf1ee-NuIwfQ2fY/exec"; 
       var allStudentsCache = [];
 
       window.onload = function() {
@@ -107,84 +153,189 @@
         }, 1000);
       }
 
-    function updateDashboard() {
-  // ប្រើត្រឹមតែ URL សុទ្ធ កុំថែម Headers អ្វីផ្សេង
-  fetch(`${API_URL}?action=getDashboardData`)
-    .then(res => res.json())
-    .then(stats => {
-      document.getElementById('cardTotalPaid').innerText = stats.totalPaid + " នាក់";
-      document.getElementById('cardTotalFemale').innerText = stats.totalFemale + " នាក់";
-      document.getElementById('cardTotalDiscounted').innerText = stats.totalDiscounted + " នាក់";
-      document.getElementById('cardTotalExempted').innerText = stats.totalExempted + " នាក់";
-      document.getElementById('cardRevenue').innerText = stats.totalRevenue;
-      
-      allStudentsCache = stats.students || [];
-      let tbody = document.getElementById('studentTableBody');
-      tbody.innerHTML = "";
-      
-      if(allStudentsCache.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-400">មិនមានទិន្នន័យ</td></tr>`;
-        return;
+      // ទាញទិន្នន័យមកបង្ហាញលើ Dashboard
+      function updateDashboard() {
+        fetch(`${API_URL}?action=getDashboardData`)
+          .then(res => res.json())
+          .then(stats => {
+            document.getElementById('cardTotalPaid').innerText = stats.totalPaid + " នាក់";
+            document.getElementById('cardTotalFemale').innerText = stats.totalFemale + " នាក់";
+            document.getElementById('cardTotalDiscounted').innerText = stats.totalDiscounted + " នាក់";
+            document.getElementById('cardTotalExempted').innerText = stats.totalExempted + " នាក់";
+            document.getElementById('cardRevenue').innerText = stats.totalRevenue;
+            
+            allStudentsCache = stats.students || [];
+            let tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = "";
+            
+            if(allStudentsCache.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-400">មិនមានទិន្នន័យ</td></tr>`;
+              return;
+            }
+
+            allStudentsCache.forEach(stu => {
+              let statusClass = stu.remaining === 0 ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800";
+              let statusText = stu.remaining === 0 ? "បង់ដាច់" : "ជំពាក់";
+              let remClass = stu.remaining > 0 ? "text-red-500 font-bold" : "text-gray-400";
+              
+              // ប៊ូតុង Edit និង Print
+              let actionBtns = `
+                <div class="flex gap-1 justify-center">
+                  <button onclick="enterEditMode('${stu.id}')" class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2 py-1 rounded transition">📝</button>
+                  <button onclick="alert('មុខងារព្រីនវិក្កយបត្រកំពុងរៀបចំ')" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded transition">🖨️</button>
+                </div>
+              `;
+
+              tbody.innerHTML += `<tr class="border-b hover:bg-slate-50">
+                <td class="p-2">${stu.year}</td>
+                <td class="p-2 font-bold text-slate-900">${stu.name}</td>
+                <td class="p-2 text-center">${stu.gender}</td>
+                <td class="p-2 text-center">${stu.class}</td>
+                <td class="p-2 text-emerald-600 font-semibold">${Number(stu.amount).toLocaleString()}</td>
+                <td class="p-2 text-blue-600 font-bold">${Number(stu.fullFee).toLocaleString()}</td>
+                <td class="p-2 ${remClass}">${Number(stu.remaining).toLocaleString()}</td>
+                <td class="p-2 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] ${statusClass}">${statusText}</span></td>
+                <td class="p-2">${actionBtns}</td>
+              </tr>`;
+            });
+          });
       }
 
-      allStudentsCache.forEach(stu => {
-        let statusClass = stu.remaining === 0 ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800";
-        let statusText = stu.remaining === 0 ? "បង់ដាច់" : "ជំពាក់";
-        tbody.innerHTML += `<tr class="border-b"><td class="p-2">${stu.year}</td><td class="p-2 font-bold">${stu.name}</td><td class="p-2">${stu.gender}</td><td class="p-2">${stu.class}</td><td class="p-2 text-emerald-600">${Number(stu.amount).toLocaleString()}</td><td class="p-2 text-blue-600">${Number(stu.fullFee).toLocaleString()}</td><td class="p-2 text-red-500">${Number(stu.remaining).toLocaleString()}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] ${statusClass}">${statusText}</span></td><td class="p-2"><button onclick="triggerReprint('${stu.id}')" class="text-xs bg-slate-200 px-2 py-1 rounded">🖨️</button></td></tr>`;
-      });
-    })
-    .catch(err => {
-      console.error("Fetch Error:", err);
-      let tbody = document.getElementById('studentTableBody');
-      tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-red-500 font-bold">មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ប្រព័ន្ធគ្រប់គ្រង!</td></tr>`;
-    });
-}
-     function submitStudent() {
-  let payload = {
-    action: "addNewStudent",
-    schoolYear: document.getElementById('schoolYear').value,
-    studentName: document.getElementById('stuName').value,
-    gender: document.getElementById('gender').value,
-    studentClass: document.getElementById('stuClass').value,
-    paymentType: document.getElementById('payType').value,
-    otherNote: document.getElementById('otherNote').value,
-    fullYearFeeInput: document.getElementById('fullYearFee').value,
-    amount: document.getElementById('amount').value,
-    paymentMethod: document.getElementById('paymentMethod').value,
-    cashierName: document.getElementById('cashierName').value
-  };
+      // ===================================
+      // មុខងារ កែប្រែទិន្នន័យ (EDIT MODE)
+      // ===================================
+      function enterEditMode(studentId) {
+        let stu = allStudentsCache.find(s => s.id === studentId);
+        if(!stu) return;
 
-  let msgDiv = document.getElementById('msg');
-  msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-yellow-100 text-yellow-800 block";
-  msgDiv.innerText = 'កំពុងរក្សាទុក...';
+        document.getElementById('editStudentId').value = stu.id;
+        document.getElementById('schoolYear').value = stu.year || "2025-2026";
+        document.getElementById('stuName').value = stu.name;
+        document.getElementById('gender').value = stu.gender;
+        document.getElementById('stuClass').value = stu.class;
+        document.getElementById('payType').value = stu.type;
+        document.getElementById('otherNote').value = stu.other || "ធម្មតា";
+        document.getElementById('fullYearFee').value = stu.fullFee;
+        document.getElementById('amount').value = stu.amount;
 
-  fetch(API_URL, {
-    method: 'POST',
-    mode: 'no-cors', // 💡 បន្ថែមជម្រើសនេះដើម្បីការពារបញ្ហា CORS កុំឱ្យติดขัดកុំឱ្យទើសទាន់
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(() => {
-    // ដោយសារ mode 'no-cors' មិនអាចអាន Response กลับ trực tiếp បាន តែទិន្នន័យបានចូលក្នុង Sheet រួចរាល់
-    msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-green-500 text-white block";
-    msgDiv.innerHTML = 'រក្សាទុកទិន្នន័យបានជោគជ័យ!';
-    document.getElementById('stuName').value = '';
-    document.getElementById('stuClass').value = '';
-    updateDashboard();
-  })
-  .catch(err => {
-    msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-red-500 text-white block";
-    msgDiv.innerText = 'មានបញ្ហា៖ ' + err;
-  });
-}
+        // លាក់ប្រអប់ឈ្មោះបេឡា និង វិធីសាស្រ្ត (ព្រោះកែប្រែមិនបាច់ប្តូរអ្នកទទួលលុយទេ)
+        document.getElementById('paymentDetailsArea').style.display = 'none';
+
+        document.getElementById('formTitle').innerHTML = "<span class='text-orange-600'>✏️ កែប្រែទិន្នន័យសិស្ស</span>";
+        document.getElementById('btnSubmit').innerText = "ធ្វើបច្ចុប្បន្នភាព (Update)";
+        document.getElementById('btnSubmit').className = "w-full p-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-lg text-sm mt-2 transition";
+        document.getElementById('btnCancelEdit').classList.remove('hidden');
+      }
+
+      function cancelEditMode() {
+        document.getElementById('editStudentId').value = "";
+        document.getElementById('stuName').value = "";
+        document.getElementById('stuClass').value = "";
+        
+        document.getElementById('paymentDetailsArea').style.display = 'block';
+
+        document.getElementById('formTitle').innerHTML = "📝 ចុះឈ្មោះ និងបង់ប្រាក់";
+        document.getElementById('btnSubmit').innerText = "រក្សាទុកទិន្នន័យ";
+        document.getElementById('btnSubmit').className = "w-full p-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg text-sm mt-2 transition";
+        document.getElementById('btnCancelEdit').classList.add('hidden');
+      }
+
+      // បញ្ជូនទិន្នន័យ (រាប់បញ្ចូលទាំង Add ថ្មី និង Update)
+      function submitStudent() {
+        let editId = document.getElementById('editStudentId').value;
+        let actionType = editId ? "updateStudentInfo" : "addNewStudent";
+
+        let payload = {
+          action: actionType,
+          studentId: editId, 
+          schoolYear: document.getElementById('schoolYear').value,
+          studentName: document.getElementById('stuName').value,
+          gender: document.getElementById('gender').value,
+          studentClass: document.getElementById('stuClass').value,
+          paymentType: document.getElementById('payType').value,
+          otherNote: document.getElementById('otherNote').value,
+          fullYearFeeInput: document.getElementById('fullYearFee').value,
+          amountInput: document.getElementById('amount').value, // សម្រាប់ Update
+          amount: document.getElementById('amount').value,      // សម្រាប់ Add
+          paymentMethod: document.getElementById('paymentMethod').value,
+          cashierName: document.getElementById('cashierName').value
+        };
+
+        if(!payload.studentName || !payload.studentClass) {
+          alert("សូមបំពេញឈ្មោះ និងថ្នាក់!"); return;
+        }
+
+        let msgDiv = document.getElementById('msg');
+        msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-yellow-100 text-yellow-800 block";
+        msgDiv.innerText = 'កំពុងរក្សាទុក...';
+
+        fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(() => {
+          msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-green-500 text-white block";
+          msgDiv.innerHTML = editId ? 'ធ្វើបច្ចុប្បន្នភាពជោគជ័យ!' : 'រក្សាទុកទិន្នន័យបានជោគជ័យ!';
+          
+          if(editId) cancelEditMode(); // បើកំពុងកែ ត្រូវលុបចោលទម្រង់កែ
+          else { document.getElementById('stuName').value = ''; document.getElementById('stuClass').value = ''; }
+          
+          updateDashboard(); // ទាញទិន្នន័យថ្មីមកបង្ហាញ
+        })
+        .catch(err => {
+          msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-red-500 text-white block";
+          msgDiv.innerText = 'មានបញ្ហា៖ ' + err;
+        });
+      }
+
+      // ===================================
+      // មុខងារ ព្រីនរបាយការណ៍ (Print)
+      // ===================================
+      function buildReportHTML(report, title) {
+        document.getElementById('rptTitle').innerText = title;
+        document.getElementById('rptDate').innerText = report.date || report.monthStr;
+        document.getElementById('rptTx').innerText = report.totalTx;
+        document.getElementById('rptCash').innerText = report.cashTotal.toLocaleString();
+        document.getElementById('rptQR').innerText = report.qrTotal.toLocaleString();
+        document.getElementById('rptGrand').innerText = report.grandTotal.toLocaleString();
+        
+        let tbody = document.getElementById('rptTbody');
+        tbody.innerHTML = "";
+        
+        report.details.forEach((row, index) => {
+          tbody.innerHTML += `
+            <tr>
+              <td class="border border-gray-300 p-1.5 text-center">${index + 1}</td>
+              <td class="border border-gray-300 p-1.5 text-[10px] text-gray-600">${row.date || report.date}<br><span class="font-semibold text-black">${row.id}</span></td>
+              <td class="border border-gray-300 p-1.5 font-bold">${row.name}</td>
+              <td class="border border-gray-300 p-1.5 text-[10px]">${row.phase}</td>
+              <td class="border border-gray-300 p-1.5 text-right font-semibold text-emerald-700">${row.amount.toLocaleString()}</td>
+              <td class="border border-gray-300 p-1.5 text-center text-[10px] text-gray-500">${row.method}</td>
+            </tr>
+          `;
+        });
+
+        // លាក់ផ្ទាំង App បង្ហាញផ្ទាំង Print
+        document.getElementById('mainAppWrapper').classList.add('print-hide');
+        document.getElementById('dailyReportPrintArea').classList.replace('hidden', 'print-show');
+        
+        window.print();
+        
+        // ត្រឡប់មកដើមវិញក្រោយព្រីន
+        setTimeout(() => {
+          document.getElementById('dailyReportPrintArea').classList.replace('print-show', 'hidden');
+          document.getElementById('mainAppWrapper').classList.remove('print-hide');
+        }, 1000);
+      }
+
       function generateDailyReport() {
         fetch(`${API_URL}?action=getDailyClosingReport`)
           .then(res => res.json())
           .then(report => {
-            if(!report || report.totalTx === 0) return alert("គ្មានទិន្នន័យថ្ងៃនេះទេ!");
-            alert("ប្រតិបត្តិការសរុបថ្ងៃនេះ: " + report.totalTx + " | ចំណូលសរុប: " + report.grandTotal.toLocaleString() + " KHR");
+            if(!report || report.totalTx === 0) return alert("គ្មានទិន្នន័យសម្រាប់ថ្ងៃនេះទេ!");
+            buildReportHTML(report, "របាយការណ៍បិទបញ្ជីបេឡាប្រចាំថ្ងៃ");
           });
       }
 
@@ -192,14 +343,9 @@
         fetch(`${API_URL}?action=getMonthlyClosingReport`)
           .then(res => res.json())
           .then(report => {
-            if(!report || report.totalTx === 0) return alert("គ្មានទិន្នន័យខែនេះទេ!");
-            alert("ប្រចាំខែ " + report.monthStr + " | ចំណូលសរុប: " + report.grandTotal.toLocaleString() + " KHR");
+            if(!report || report.totalTx === 0) return alert("គ្មានទិន្នន័យសម្រាប់ខែនេះទេ!");
+            buildReportHTML(report, "របាយការណ៍បិទបញ្ជីបេឡាប្រចាំខែ");
           });
-      }
-
-      function triggerReprint(id) {
-        let stu = allStudentsCache.find(s => s.id === id);
-        if(stu) alert("បោះពុម្ពវិក្កយបត្រសម្រាប់៖ " + stu.name);
       }
     </script>
   </body>
