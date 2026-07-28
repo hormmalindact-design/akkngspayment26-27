@@ -260,6 +260,114 @@
         document.body.removeChild(link);
       }
 
+// 📊 របាយការណ៍ប្រចាំថ្ងៃ
+      function generateDailyReport() {
+        var btn = document.getElementById('btnDailyReport');
+        var originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ កំពុងរៀបចំ...";
+        
+        fetch(`${API_URL}?action=getDailyClosingReport`)
+        .then(res => res.json())
+        .then(report => {
+          btn.innerHTML = originalText;
+          
+          if(!report || report.totalTx === 0) {
+            alert("មិនមានទិន្នន័យបង់ប្រាក់សម្រាប់ថ្ងៃនេះទេ!");
+            return;
+          }
+          
+          document.querySelector('#dailyReportPrintArea h3').innerText = "របាយការណ៍បិទបញ្ជីបេឡាប្រចាំថ្ងៃ";
+          document.querySelector('#dailyReportPrintArea p.text-center.mb-6').innerHTML = 'កាលបរិច្ឆេទ៖ <span class="font-bold">' + report.date + '</span>';
+          
+          document.getElementById('rptTx').innerText = report.totalTx;
+          document.getElementById('rptCash').innerText = report.cashTotal.toLocaleString();
+          document.getElementById('rptQR').innerText = report.qrTotal.toLocaleString();
+          document.getElementById('rptGrand').innerText = report.grandTotal.toLocaleString();
+          
+          var tbody = document.getElementById('rptTbody');
+          tbody.innerHTML = "";
+          
+          report.details.forEach(function(row, index) {
+            tbody.innerHTML += `
+              <tr>
+                <td class="border border-gray-300 p-1.5 text-center">${index + 1}</td>
+                <td class="border border-gray-300 p-1.5 text-[10px] text-gray-600">${row.date}<br><span class="font-semibold text-black">${row.id}</span></td>
+                <td class="border border-gray-300 p-1.5 font-bold">${row.name}</td>
+                <td class="border border-gray-300 p-1.5 text-[10px]">${row.phase}</td>
+                <td class="border border-gray-300 p-1.5 text-right font-semibold text-emerald-700">${row.amount.toLocaleString()}</td>
+                <td class="border border-gray-300 p-1.5 text-center text-[10px] text-gray-500">${row.method}</td>
+              </tr>
+            `;
+          });
+          
+          triggerPrintReport();
+        }).catch(err => {
+          btn.innerHTML = originalText;
+          alert("មានបញ្ហាในการទាញយកទិន្នន័យរបាយការណ៍!");
+        });
+      }
+
+      // 📅 របាយការណ៍ប្រចាំខែ
+      function generateMonthlyReport() {
+        var btn = document.getElementById('btnMonthlyReport');
+        var originalText = btn.innerHTML;
+        btn.innerHTML = "⏳ កំពុងរៀបចំ...";
+        
+        fetch(`${API_URL}?action=getMonthlyClosingReport`)
+        .then(res => res.json())
+        .then(report => {
+          btn.innerHTML = originalText;
+          
+          if(!report || report.totalTx === 0) {
+            alert("មិនមានទិន្នន័យបង់ប្រាក់សម្រាប់ខែនេះទេ!");
+            return;
+          }
+          
+          document.querySelector('#dailyReportPrintArea h3').innerText = "របាយការណ៍បិទបញ្ជីបេឡាប្រចាំខែ";
+          document.querySelector('#dailyReportPrintArea p.text-center.mb-6').innerHTML = 'សម្រាប់ខែ៖ <span class="font-bold text-blue-700">' + report.monthStr + '</span>';
+          
+          document.getElementById('rptTx').innerText = report.totalTx;
+          document.getElementById('rptCash').innerText = report.cashTotal.toLocaleString();
+          document.getElementById('rptQR').innerText = report.qrTotal.toLocaleString();
+          document.getElementById('rptGrand').innerText = report.grandTotal.toLocaleString();
+          
+          var tbody = document.getElementById('rptTbody');
+          tbody.innerHTML = "";
+          
+          report.details.forEach(function(row, index) {
+            tbody.innerHTML += `
+              <tr>
+                <td class="border border-gray-300 p-1.5 text-center">${index + 1}</td>
+                <td class="border border-gray-300 p-1.5 text-[10px] text-gray-600">${row.date}<br><span class="font-semibold text-black">${row.id}</span></td>
+                <td class="border border-gray-300 p-1.5 font-bold">${row.name}</td>
+                <td class="border border-gray-300 p-1.5 text-[10px]">${row.phase}</td>
+                <td class="border border-gray-300 p-1.5 text-right font-semibold text-emerald-700">${row.amount.toLocaleString()}</td>
+                <td class="border border-gray-300 p-1.5 text-center text-[10px] text-gray-500">${row.method}</td>
+              </tr>
+            `;
+          });
+          
+          triggerPrintReport();
+        }).catch(err => {
+          btn.innerHTML = originalText;
+          alert("មានបញ្ហាក្នុងការទាញយកទិន្នន័យរបាយការណ៍!");
+        });
+      }
+
+      // 🖨️ មុខងារបញ្ជាព្រីន
+      function triggerPrintReport() {
+        document.getElementById('mainAppWrapper').classList.add('print-hide');
+        document.getElementById('dailyReportPrintArea').classList.replace('hidden', 'print-show');
+        document.getElementById('printReceiptArea').classList.replace('print-show', 'hidden');
+        
+        window.print();
+        
+        setTimeout(function() {
+          document.getElementById('dailyReportPrintArea').classList.replace('print-show', 'hidden');
+          document.getElementById('mainAppWrapper').classList.remove('print-hide');
+        }, 1000);
+      }
+      
       // ==========================================
       // មុខងារទាញទិន្នន័យ និងបង្ហាញតារាង
       // ==========================================
