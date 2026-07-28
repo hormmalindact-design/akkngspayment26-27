@@ -5,6 +5,7 @@ var TELEGRAM_BOT_TOKEN = "8877919591:AAHy-g0du2GBVJx0sHisVFTIsD32NAd35qA";
 var TELEGRAM_CHAT_ID = "-1004317236863";     
 
 // 🌐 សម្រាប់ទទួលសំណើពី Vercel (API Endpoint)
+// 🌐 សម្រាប់ទទួលសំណើ POST ពី Vercel (ដោះស្រាយបញ្ហា CORS)
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.tryLock(10000);
@@ -19,12 +20,6 @@ function doPost(e) {
       result.status = "success";
     } else if (action === "updateStudentInfo") {
       result.message = updateStudentInfo(data.studentId, data.studentName, data.gender, data.studentClass, data.schoolYear, data.paymentType, data.otherNote, data.fullYearFeeInput, data.amountInput);
-      result.status = "success";
-    } else if (action === "confirmPayment") {
-      result.message = confirmPayment(data.studentId, data.paymentMethod, data.cashierName);
-      result.status = "success";
-    } else if (action === "collectSecondPayment") {
-      result.message = collectSecondPayment(data.studentId, data.additionalAmount, data.paymentMethod, data.cashierName);
       result.status = "success";
     } else {
       result.status = "error";
@@ -42,20 +37,15 @@ function doPost(e) {
   }
 }
 
+// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel
 function doGet(e) {
   var action = e.parameter.action;
   var result = {};
   
   if (action === "getDashboardData") {
     result = getDashboardData();
-  } else if (action === "getStudentById") {
-    result = getStudentById(e.parameter.studentId);
-  } else if (action === "getDailyClosingReport") {
-    result = getDailyClosingReport();
-  } else if (action === "getMonthlyClosingReport") {
-    result = getMonthlyClosingReport();
   } else {
-    result = { status: "error", message: "Invalid action or missing parameters" };
+    result = { status: "error", message: "Invalid action" };
   }
   
   return ContentService.createTextOutput(JSON.stringify(result))
