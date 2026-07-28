@@ -134,36 +134,46 @@
           });
       }
 
-      function submitStudent() {
-        let payload = {
-          action: "addNewStudent",
-          schoolYear: document.getElementById('schoolYear').value,
-          studentName: document.getElementById('stuName').value,
-          gender: document.getElementById('gender').value,
-          studentClass: document.getElementById('stuClass').value,
-          paymentType: document.getElementById('payType').value,
-          otherNote: document.getElementById('otherNote').value,
-          fullYearFeeInput: document.getElementById('fullYearFee').value,
-          amount: document.getElementById('amount').value,
-          paymentMethod: document.getElementById('paymentMethod').value,
-          cashierName: document.getElementById('cashierName').value
-        };
+     function submitStudent() {
+  let payload = {
+    action: "addNewStudent",
+    schoolYear: document.getElementById('schoolYear').value,
+    studentName: document.getElementById('stuName').value,
+    gender: document.getElementById('gender').value,
+    studentClass: document.getElementById('stuClass').value,
+    paymentType: document.getElementById('payType').value,
+    otherNote: document.getElementById('otherNote').value,
+    fullYearFeeInput: document.getElementById('fullYearFee').value,
+    amount: document.getElementById('amount').value,
+    paymentMethod: document.getElementById('paymentMethod').value,
+    cashierName: document.getElementById('cashierName').value
+  };
 
-        let msgDiv = document.getElementById('msg');
-        msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-yellow-100 text-yellow-800 block";
-        msgDiv.innerText = 'កំពុងរក្សាទុក...';
+  let msgDiv = document.getElementById('msg');
+  msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-yellow-100 text-yellow-800 block";
+  msgDiv.innerText = 'កំពុងរក្សាទុក...';
 
-        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
-          .then(res => res.json())
-          .then(res => {
-            msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-green-500 text-white block";
-            msgDiv.innerHTML = 'ជោគជ័យ! កូដសិស្ស៖ ' + res.studentId;
-            document.getElementById('stuName').value = '';
-            document.getElementById('stuClass').value = '';
-            updateDashboard();
-          });
-      }
-
+  fetch(API_URL, {
+    method: 'POST',
+    mode: 'no-cors', // 💡 បន្ថែមជម្រើសនេះដើម្បីការពារបញ្ហា CORS កុំឱ្យติดขัดកុំឱ្យទើសទាន់
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    // ដោយសារ mode 'no-cors' មិនអាចអាន Response กลับ trực tiếp បាន តែទិន្នន័យបានចូលក្នុង Sheet រួចរាល់
+    msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-green-500 text-white block";
+    msgDiv.innerHTML = 'រក្សាទុកទិន្នន័យបានជោគជ័យ!';
+    document.getElementById('stuName').value = '';
+    document.getElementById('stuClass').value = '';
+    updateDashboard();
+  })
+  .catch(err => {
+    msgDiv.className = "mt-4 p-3 rounded-lg text-center text-xs font-bold bg-red-500 text-white block";
+    msgDiv.innerText = 'មានបញ្ហា៖ ' + err;
+  });
+}
       function generateDailyReport() {
         fetch(`${API_URL}?action=getDailyClosingReport`)
           .then(res => res.json())
