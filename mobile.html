@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Khmer+OS+Muol+Light&family=Khmer+OS+Battambang&display=swap" rel="stylesheet">
+    <style>
+      body { font-family: 'Khmer OS Battambang', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
+      .font-muol { font-family: 'Khmer OS Muol Light', sans-serif; }
+      ::-webkit-scrollbar { width: 0px; background: transparent; }
+      .tab-content { display: none; animation: fadeIn 0.3s ease-in-out; }
+      .tab-content.active { display: block; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+  </head>
+  <body class="text-gray-800 h-screen flex flex-col overflow-hidden">
+    <!-- App Container -->
+    <div class="max-w-md mx-auto w-full h-full flex flex-col relative bg-slate-50 shadow-2xl">
+      <!-- App Bar -->
+      <div class="bg-gradient-to-r from-blue-800 to-indigo-700 pt-6 pb-12 px-6 rounded-b-[2rem] shadow-lg shrink-0 z-10 relative">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 bg-white rounded-full p-1 shadow-md flex items-center justify-center shrink-0">
+            <img src="https://lh3.googleusercontent.com/d/1wkwC994Ybybe2TUOeE-h-gNIxfZQyYvY" class="w-full h-full object-contain">
+          </div>
+          <div>
+            <h1 class="font-muol text-[12px] text-blue-100 leading-tight">បឋមសិក្សាសម្តេចព្រះរាជអគ្គមហេសី</h1>
+            <h2 class="font-bold text-sm text-white mt-0.5">ប្រព័ន្ធពិនិត្យទិន្នន័យសិស្ស</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- ផ្ទៃបង្ហាញទិន្នន័យ -->
+      <div class="flex-1 overflow-y-auto px-5 -mt-6 z-20 pb-24">
+        
+        <!-- TAB 1: ផ្ទាំងស្ថិតិ -->
+        <div id="tab-home" class="tab-content active space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+              <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-lg mb-2">👥</div>
+              <span class="text-[11px] font-bold text-gray-500">សិស្សបានបង់</span>
+              <span id="dashTotalPaid" class="text-2xl font-black text-slate-800 mt-1">...</span>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center">
+              <div class="w-10 h-10 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center text-lg mb-2">👩‍🎓</div>
+              <span class="text-[11px] font-bold text-gray-500">សិស្សស្រី</span>
+              <span id="dashFemalePaid" class="text-2xl font-black text-slate-800 mt-1">...</span>
+            </div>
+          </div>
+          <div class="bg-gradient-to-br from-emerald-500 to-teal-600 p-5 rounded-2xl shadow-md text-white relative overflow-hidden">
+            <div class="flex justify-between items-center relative z-10">
+              <span class="text-xs font-semibold text-emerald-100">💰 ចំណូលប្រមូលបានសរុប</span>
+            </div>
+            <div id="dashCollected" class="text-2xl font-black mt-2 relative z-10">... KHR</div>
+          </div>
+        </div>
+
+        <!-- TAB 2: បញ្ជីសិស្សតាមថ្នាក់ -->
+        <div id="tab-class" class="tab-content space-y-4">
+          <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-100 flex items-center">
+            <div class="bg-indigo-100 text-indigo-700 p-2.5 rounded-xl text-sm">🏫</div>
+            <select id="classSelector" onchange="renderClassList()" class="flex-1 bg-transparent border-none text-sm font-bold text-slate-700 outline-none px-3 cursor-pointer">
+              <option value="">ជ្រើសរើសថ្នាក់រៀន...</option>
+            </select>
+          </div>
+          <div id="classResultArea" class="hidden">
+            <div class="flex justify-between items-center bg-white rounded-xl shadow-sm border border-gray-100 p-3 mb-4">
+              <div class="text-center"><p class="text-[10px] text-gray-400">សរុប</p><p id="lblClassTotal" class="font-black text-slate-700">0</p></div>
+              <div class="w-px h-8 bg-gray-200"></div>
+              <div class="text-center"><p class="text-[10px] text-gray-400">បានបង់</p><p id="lblClassPaid" class="font-black text-emerald-600">0</p></div>
+              <div class="w-px h-8 bg-gray-200"></div>
+              <div class="text-center"><p class="text-[10px] text-gray-400">ជំពាក់</p><p id="lblClassUnpaid" class="font-black text-red-500">0</p></div>
+            </div>
+            <div id="classListContainer" class="space-y-2.5 pb-4"></div>
+          </div>
+        </div>
+
+        <!-- TAB 3: ស្វែងរកសិស្ស -->
+        <div id="tab-search" class="tab-content space-y-4">
+          <div class="bg-white p-2 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-2">
+            <div class="bg-blue-50 text-blue-600 p-2.5 rounded-xl">🔍</div>
+            <input type="text" id="searchId" class="flex-1 bg-transparent text-sm font-bold text-slate-700 outline-none" placeholder="លេខកូដសិស្ស...">
+            <button onclick="searchStudent()" class="bg-blue-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition">ស្វែងរក</button>
+          </div>
+          <div id="msg" class="p-3 rounded-xl text-center text-xs font-bold hidden shadow-sm"></div>
+          <div id="studentCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hidden">
+            <div class="p-5">
+              <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">👤</div>
+                  <div>
+                    <p id="lblName" class="font-black text-sm text-slate-800"></p>
+                    <p class="text-[10px] text-gray-500">ប្រភេទ៖ <span id="lblType" class="text-blue-600 font-semibold"></span></p>
+                  </div>
+                </div>
+                <span id="lblStatus" class="px-2.5 py-1 rounded-lg text-[10px] font-bold"></span>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-3 text-xs space-y-2 border border-slate-100">
+                <div class="flex justify-between"><span>បានបង់រួច៖</span><span id="lblAmount" class="font-bold text-emerald-600 text-sm"></span></div>
+                <div class="flex justify-between border-t border-slate-200 pt-2"><span>ប្រាក់នៅខ្វះ៖</span><span id="lblRemaining" class="font-bold text-red-500 text-sm"></span></div>
+              </div>
+              <button onclick="viewHistory()" class="w-full mt-4 bg-white border border-gray-200 text-gray-700 text-xs font-bold py-2.5 rounded-xl shadow-sm">📋 មើលប្រវត្តិលម្អិត</button>
+              <div id="historyTableArea" class="mt-3 hidden">
+                <div class="bg-slate-50 rounded-xl p-2 border border-slate-100">
+                  <table class="w-full text-left text-[10px]">
+                    <tbody id="historyTbody" class="divide-y divide-gray-200"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Nav -->
+      <div class="absolute bottom-0 w-full bg-white border-t border-gray-100 pb-safe z-30 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] rounded-t-2xl">
+        <div class="flex justify-around items-center py-2 px-2">
+          <button id="btn-home" onclick="switchTab('home')" class="nav-btn w-16 flex flex-col items-center gap-1 text-blue-600">
+            <span class="text-xl mb-0.5">🏠</span><span class="text-[10px] font-bold">ទំព័រដើម</span>
+          </button>
+          <button id="btn-class" onclick="switchTab('class')" class="nav-btn w-16 flex flex-col items-center gap-1 text-gray-400">
+            <span class="text-xl mb-0.5 opacity-80">🏫</span><span class="text-[10px] font-bold">តាមថ្នាក់</span>
+          </button>
+          <button id="btn-search" onclick="switchTab('search')" class="nav-btn w-16 flex flex-col items-center gap-1 text-gray-400">
+            <span class="text-xl mb-0.5 opacity-80">🔍</span><span class="text-[10px] font-bold">ស្វែងរក</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- API Logic -->
+    <script>
+      // ⚠️ សូមបញ្ចូល Web App URL របស់អ្នកនៅទីនេះ!
+      const API_URL = "https://script.google.com/macros/s/AKfycbw7-CXv8CnVo2B7zZu0olq_7-WJb6yU2mLX5QbuKwZHFxtqrIIFKf1ee-NuIwfQ2fY/exec"; 
+      var allClassData = null; 
+      var currentStudentId = null;
+
+      window.onload = function() {
+        refreshDashboard();
+        loadClassData();
+      };
+
+      function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tabName).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(el => {
+          el.classList.remove('text-blue-600', 'text-indigo-600');
+          el.classList.add('text-gray-400');
+          el.querySelector('span').classList.add('opacity-80');
+        });
+        var activeBtn = document.getElementById('btn-' + tabName);
+        activeBtn.classList.remove('text-gray-400');
+        activeBtn.classList.add(tabName === 'class' ? 'text-indigo-600' : 'text-blue-600');
+        activeBtn.querySelector('span').classList.remove('opacity-80');
+      }
+
+      function refreshDashboard() {
+        fetch(`${API_URL}?action=getTeacherDashboardData`)
+          .then(res => res.json())
+          .then(data => {
+            if (!data) return;
+            document.getElementById('dashTotalPaid').innerText = data.totalPaidStudents;
+            document.getElementById('dashFemalePaid').innerText = data.totalFemalePaid;
+            document.getElementById('dashCollected').innerText = data.totalCollected.toLocaleString();
+          });
+      }
+
+      function loadClassData() {
+        fetch(`${API_URL}?action=getClassMonitoringData`)
+          .then(res => res.json())
+          .then(data => {
+            allClassData = data;
+            var selector = document.getElementById('classSelector');
+            var classes = Object.keys(data).sort(); 
+            classes.forEach(cls => {
+              selector.innerHTML += `<option value="${cls}">ថ្នាក់ទី ${cls}</option>`;
+            });
+          });
+      }
+
+      function renderClassList() {
+        var cls = document.getElementById('classSelector').value;
+        var resultArea = document.getElementById('classResultArea');
+        var listContainer = document.getElementById('classListContainer');
+        
+        if (!cls) { resultArea.style.display = 'none'; return; }
+        
+        var students = allClassData[cls] || [];
+        var paidCount = 0; var unpaidCount = 0;
+        listContainer.innerHTML = '';
+        
+        students.forEach((stu, index) => {
+          var isFullyPaid = (stu.status === "Paid" && stu.remaining === 0);
+          if (isFullyPaid) paidCount++; else unpaidCount++; 
+          
+          var badge = isFullyPaid 
+            ? '<span class="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg text-[9px] font-black">បង់ដាច់</span>'
+            : '<span class="bg-red-100 text-red-600 px-2.5 py-1 rounded-lg text-[9px] font-black">ជំពាក់</span>';
+            
+          var card = `
+            <div class="p-3 bg-white rounded-2xl shadow-sm border border-slate-100 mb-3">
+              <div class="flex justify-between items-start border-b border-gray-50 pb-2 mb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">${index + 1}</div>
+                  <div>
+                    <p class="text-xs font-bold text-slate-800">${stu.name}</p>
+                    <p class="text-[9px] text-gray-500 mt-0.5">ភេទ៖ <span class="font-semibold">${stu.gender}</span></p>
+                  </div>
+                </div>
+                <div>${badge}</div>
+              </div>
+              <div class="grid grid-cols-3 gap-2 text-center text-[10px]">
+                <div class="bg-slate-50 rounded-lg p-1.5 border border-slate-100">
+                  <span class="text-gray-400 block mb-0.5 text-[8px]">តម្លៃសិក្សា</span>
+                  <span class="font-bold text-slate-700">${stu.fullFee.toLocaleString()}</span>
+                </div>
+                <div class="bg-emerald-50 rounded-lg p-1.5 border border-emerald-100">
+                  <span class="text-emerald-500 block mb-0.5 text-[8px]">បានបង់</span>
+                  <span class="font-bold text-emerald-700">${stu.paidAmt.toLocaleString()}</span>
+                </div>
+                <div class="bg-red-50 rounded-lg p-1.5 border border-red-100">
+                  <span class="text-red-400 block mb-0.5 text-[8px]">នៅខ្វះ</span>
+                  <span class="font-bold text-red-600">${stu.remaining.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>`;
+          listContainer.innerHTML += card;
+        });
+        
+        document.getElementById('lblClassTotal').innerText = students.length;
+        document.getElementById('lblClassPaid').innerText = paidCount;
+        document.getElementById('lblClassUnpaid').innerText = unpaidCount;
+        resultArea.style.display = 'block';
+      }
+
+      function searchStudent() {
+        var id = document.getElementById('searchId').value.trim();
+        if(!id) return alert('សូមបញ្ចូលលេខកូដសិស្ស!');
+        var msgDiv = document.getElementById('msg');
+        document.getElementById('historyTableArea').style.display = 'none';
+        msgDiv.className = "p-3 rounded-xl text-center text-xs font-bold bg-blue-100 text-blue-800 block";
+        msgDiv.innerText = 'កំពុងស្វែងរក...';
+        document.getElementById('studentCard').style.display = 'none';
+        
+        fetch(`${API_URL}?action=getStudentById&studentId=${id}`)
+          .then(res => res.json())
+          .then(student => {
+            if(student && student.id) {
+              currentStudentId = student.id;
+              document.getElementById('lblName').innerText = student.name;
+              document.getElementById('lblType').innerText = student.type;
+              document.getElementById('lblAmount').innerText = Number(student.amount).toLocaleString() + " ៛";
+              var rem = (Number(student.fullFee)||0) - (Number(student.amount)||0);
+              if(rem < 0) rem = 0;
+              document.getElementById('lblRemaining').innerText = rem.toLocaleString() + " ៛";
+              
+              var statusLbl = document.getElementById('lblStatus');
+              if (rem === 0) {
+                statusLbl.innerText = "បានបង់ដាច់";
+                statusLbl.className = "px-3 py-1 rounded-lg text-[10px] font-black bg-emerald-100 text-emerald-700";
+              } else {
+                statusLbl.innerText = "នៅខ្វះប្រាក់";
+                statusLbl.className = "px-3 py-1 rounded-lg text-[10px] font-black bg-red-100 text-red-600";
+              }
+              document.getElementById('studentCard').style.display = 'block';
+              msgDiv.style.display = 'none';
+            } else {
+              msgDiv.className = "p-3 rounded-xl text-center text-xs font-bold bg-red-100 text-red-800 block";
+              msgDiv.innerText = 'រកមិនឃើញកូដសិស្សនេះទេ!';
+            }
+          });
+      }
+
+      function viewHistory() {
+        if (!currentStudentId) return;
+        var tbody = document.getElementById('historyTbody');
+        document.getElementById('historyTableArea').style.display = 'block';
+        tbody.innerHTML = '<tr><td class="p-2 text-center text-gray-400">កំពុងទាញយក...</td></tr>';
+        
+        fetch(`${API_URL}?action=getStudentHistoryLog&studentId=${currentStudentId}`)
+          .then(res => res.json())
+          .then(historyData => {
+            tbody.innerHTML = '';
+            if (!historyData || historyData.length === 0) return tbody.innerHTML = '<tr><td class="p-2 text-center text-amber-600">គ្មានប្រវត្តិ</td></tr>';
+            historyData.forEach(record => {
+              tbody.innerHTML += `<tr><td class="py-2 text-gray-400">${record.date}</td><td class="py-2 text-blue-700 font-bold">${record.phase}</td><td class="py-2 text-emerald-600 font-bold text-right">${record.amount.toLocaleString()} ៛</td></tr>`;
+            });
+          });
+      }
+    </script>
+  </body>
+</html>
