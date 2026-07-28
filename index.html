@@ -107,33 +107,38 @@
         }, 1000);
       }
 
-      function updateDashboard() {
-        fetch(`${API_URL}?action=getDashboardData`)
-          .then(res => res.json())
-          .then(stats => {
-            document.getElementById('cardTotalPaid').innerText = stats.totalPaid + " នាក់";
-            document.getElementById('cardTotalFemale').innerText = stats.totalFemale + " នាក់";
-            document.getElementById('cardTotalDiscounted').innerText = stats.totalDiscounted + " នាក់";
-            document.getElementById('cardTotalExempted').innerText = stats.totalExempted + " នាក់";
-            document.getElementById('cardRevenue').innerText = stats.totalRevenue;
-            
-            allStudentsCache = stats.students || [];
-            let tbody = document.getElementById('studentTableBody');
-            tbody.innerHTML = "";
-            
-            if(allStudentsCache.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-400">មិនមានទិន្នន័យ</td></tr>`;
-              return;
-            }
-
-            allStudentsCache.forEach(stu => {
-              let statusClass = stu.remaining === 0 ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800";
-              let statusText = stu.remaining === 0 ? "បង់ដាច់" : "ជំពាក់";
-              tbody.innerHTML += `<tr class="border-b"><td class="p-2">${stu.year}</td><td class="p-2 font-bold">${stu.name}</td><td class="p-2">${stu.gender}</td><td class="p-2">${stu.class}</td><td class="p-2 text-emerald-600">${Number(stu.amount).toLocaleString()}</td><td class="p-2 text-blue-600">${Number(stu.fullFee).toLocaleString()}</td><td class="p-2 text-red-500">${Number(stu.remaining).toLocaleString()}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] ${statusClass}">${statusText}</span></td><td class="p-2"><button onclick="triggerReprint('${stu.id}')" class="text-xs bg-slate-200 px-2 py-1 rounded">🖨️</button></td></tr>`;
-            });
-          });
+    function updateDashboard() {
+  // ប្រើត្រឹមតែ URL សុទ្ធ កុំថែម Headers អ្វីផ្សេង
+  fetch(`${API_URL}?action=getDashboardData`)
+    .then(res => res.json())
+    .then(stats => {
+      document.getElementById('cardTotalPaid').innerText = stats.totalPaid + " នាក់";
+      document.getElementById('cardTotalFemale').innerText = stats.totalFemale + " នាក់";
+      document.getElementById('cardTotalDiscounted').innerText = stats.totalDiscounted + " នាក់";
+      document.getElementById('cardTotalExempted').innerText = stats.totalExempted + " នាក់";
+      document.getElementById('cardRevenue').innerText = stats.totalRevenue;
+      
+      allStudentsCache = stats.students || [];
+      let tbody = document.getElementById('studentTableBody');
+      tbody.innerHTML = "";
+      
+      if(allStudentsCache.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-gray-400">មិនមានទិន្នន័យ</td></tr>`;
+        return;
       }
 
+      allStudentsCache.forEach(stu => {
+        let statusClass = stu.remaining === 0 ? "bg-green-100 text-green-800" : "bg-amber-100 text-amber-800";
+        let statusText = stu.remaining === 0 ? "បង់ដាច់" : "ជំពាក់";
+        tbody.innerHTML += `<tr class="border-b"><td class="p-2">${stu.year}</td><td class="p-2 font-bold">${stu.name}</td><td class="p-2">${stu.gender}</td><td class="p-2">${stu.class}</td><td class="p-2 text-emerald-600">${Number(stu.amount).toLocaleString()}</td><td class="p-2 text-blue-600">${Number(stu.fullFee).toLocaleString()}</td><td class="p-2 text-red-500">${Number(stu.remaining).toLocaleString()}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] ${statusClass}">${statusText}</span></td><td class="p-2"><button onclick="triggerReprint('${stu.id}')" class="text-xs bg-slate-200 px-2 py-1 rounded">🖨️</button></td></tr>`;
+      });
+    })
+    .catch(err => {
+      console.error("Fetch Error:", err);
+      let tbody = document.getElementById('studentTableBody');
+      tbody.innerHTML = `<tr><td colspan="9" class="p-4 text-center text-red-500 font-bold">មានបញ្ហាក្នុងការភ្ជាប់ទៅកាន់ប្រព័ន្ធគ្រប់គ្រង!</td></tr>`;
+    });
+}
      function submitStudent() {
   let payload = {
     action: "addNewStudent",
