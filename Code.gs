@@ -76,9 +76,7 @@ function verifyLogin(username, password) {
   }
 }
 
-// ⚠️ (សូមរក្សាមុខងារផ្សេងៗទៀតរបស់អ្នកដូចជា addNewStudent, getDashboardData នៅខាងក្រោមដដែល)  
-  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
-}
+
 // មុខងារគ្រឹះដដែល (Functions)
 // ==========================================
 function addNewStudent(studentName, gender, studentClass, paymentType, amount, otherNote, schoolYear, fullYearFeeInput, paymentMethod, cashierName) {
