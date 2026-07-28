@@ -38,16 +38,22 @@ function doPost(e) {
 }
 
 // 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel
+// 🌐 សម្រាប់ទទួលសំណើ GET ពី Vercel (ដោះស្រាយបញ្ហា CORS ទាំងស្រុង)
 function doGet(e) {
   var action = e.parameter.action;
   var result = {};
   
   if (action === "getDashboardData") {
     result = getDashboardData();
+  } else if (action === "getDailyClosingReport") {
+    result = getDailyClosingReport();
+  } else if (action === "getMonthlyClosingReport") {
+    result = getMonthlyClosingReport();
   } else {
     result = { status: "error", message: "Invalid action" };
   }
   
+  // បន្ថែម ContentService ជាមួយ JSON និង Header អនុញ្ញាត CORS
   return ContentService.createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
 }
