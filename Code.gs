@@ -149,7 +149,7 @@ function updateStudentInfo(studentId, studentName, gender, studentClass, schoolY
   }
   return "រកមិនឃើញសិស្សដើម្បីកែប្រែឡើយ!";
 }
-
+// ទាញយកស្ថិតិសម្រាប់ Cards
 function getDashboardData() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Students_Payment");
   if (!sheet) return { totalPaid: 0, totalFemale: 0, totalRevenue: "0 KHR", totalDiscounted: 0, totalExempted: 0, students: [] };
@@ -175,7 +175,9 @@ function getDashboardData() {
     var fullFee = Number(data[i][12]) || 0;
     var remaining = Number(data[i][13]) || 0;
     
-    if (status === "Paid") {
+    // 💡 ដំណោះស្រាយ៖ ដូរពីការឆែក (status === "Paid") មកឆែក (amount > 0) វិញ
+    // ឱ្យតែមានទឹកប្រាក់បង់ចូល (> 0) គឺរាប់បញ្ចូលទាំងអស់ ទោះបីជាជំពាក់ក៏ដោយ
+    if (amount > 0) {
       totalPaidStudents++;
       totalRevenue += amount;
       if (gender === "ស្រី") totalFemalePaid++;
