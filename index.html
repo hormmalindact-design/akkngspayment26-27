@@ -393,6 +393,63 @@
             buildReportHTML(report, "របាយការណ៍បិទបញ្ជីបេឡាប្រចាំខែ");
           });
       }
+
+// ===================================
+      // មុខងារ បង់បង្គ្រប់លើកទី២
+      // ===================================
+      function openSecondPaymentModal(id, name, remaining) {
+        document.getElementById('spId').value = id;
+        document.getElementById('spIdDisplay').innerText = id;
+        document.getElementById('spName').innerText = name;
+        document.getElementById('spAmount').value = remaining; 
+        
+        let currentCashier = document.getElementById('cashierName').value;
+        if (currentCashier) document.getElementById('spCashier').value = currentCashier;
+        
+        document.getElementById('secondPaymentModal').classList.remove('hidden');
+      }
+
+      function closeSecondPaymentModal() {
+        document.getElementById('secondPaymentModal').classList.add('hidden');
+      }
+
+      function processSecondPayment() {
+        let id = document.getElementById('spId').value;
+        let amt = document.getElementById('spAmount').value;
+        let method = document.getElementById('spMethod').value;
+        let cashier = document.getElementById('spCashier').value.trim();
+        
+        if (!cashier || amt <= 0) return alert('សូមបញ្ជាក់ឈ្មោះ និងទឹកប្រាក់!');
+        
+        let btn = document.getElementById('btnSubmitSP');
+        btn.innerText = "កំពុងរក្សាទុក..."; btn.disabled = true;
+
+        let payload = {
+          action: "collectSecondPayment",
+          studentId: id,
+          additionalAmount: amt,
+          paymentMethod: method,
+          cashierName: cashier
+        };
+
+        fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(() => {
+          closeSecondPaymentModal();
+          btn.innerText = "បញ្ជាក់ការបង់"; btn.disabled = false;
+          alert("ជោគជ័យ! បានទទួលប្រាក់បង្គ្រប់សម្រាប់សិស្សលេខកូដ " + id);
+          updateDashboard(); // ទាញទិន្នន័យថ្មីមកបង្ហាញ
+        })
+        .catch(err => {
+          alert('មានបញ្ហា៖ ' + err);
+          btn.innerText = "បញ្ជាក់ការបង់"; btn.disabled = false;
+        });
+      }
+      
     </script>
   </body>
 </html>
